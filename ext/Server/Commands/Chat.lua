@@ -24,6 +24,10 @@ function ChatCommands:Execute(p_Parts, p_Player)
 			ChatManager:SendMessage('You have following permissions (GUID: ' .. tostring(p_Player.guid) .. '):', p_Player)
 			ChatManager:SendMessage(table.concat(s_Permissions, ', '), p_Player)
 		end
+	elseif p_Parts[1] == '!log' then
+		Globals.PerfLog = true
+	elseif p_Parts[1] == '!nolog' then
+		Globals.PerfLog = false
 	elseif p_Parts[1] == '!car' then
 		if PermissionManager:HasPermission(p_Player, 'ChatCommands') == false then
 			ChatManager:SendMessage('You have no permissions for this action (ChatCommands).', p_Player)

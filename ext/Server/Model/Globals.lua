@@ -25,5 +25,7 @@ Globals = {
 
 	RespawnWayBots = false, --used for the runtime respawn
 	AttackWayBots = false, --used for the runtime attack
-	SpawnMode = SpawnModes.manual --used for the runtime spawnmode
+	SpawnMode = SpawnModes.manual, --used for the runtime spawnmode
+
+	PerfLog = false
 }
