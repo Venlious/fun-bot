@@ -77,6 +77,11 @@ function BotManager:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 		return
 	end
 
+	local time = {}
+	if Globals.PerfLog then
+		table.insert(time, SharedUtils:GetTimeMS())
+	end
+
 	for _, l_Bot in pairs(self._Bots) do
 		l_Bot:OnUpdatePassPostFrame(p_DeltaTime)
 	end
@@ -109,6 +114,10 @@ function BotManager:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 		else
 			self._PendingAcceptRevives[i] = nil
 		end
+	end
+	if Globals.PerfLog then
+		table.insert(time, SharedUtils:GetTimeMS())
+		print("Botmanager-Update: "..time[2]-time[1])
 	end
 end
 
@@ -204,7 +213,7 @@ end
 ---@param p_Damage number
 ---@param p_DamageGiverInfo DamageGiverInfo|nil
 function BotManager:OnVehicleDamage(p_VehicleEntity, p_Damage, p_DamageGiverInfo)
-	if p_Damage > 0.0 and p_VehicleEntity ~= nil then
+	if p_Damage > 0.0 and p_VehicleEntity ~= nil and p_DamageGiverInfo ~= nil and p_DamageGiverInfo.giver ~= nil and Config.ShootBackIfHit then
 		local s_ControllableEntity = ControllableEntity(p_VehicleEntity)
 		local s_MaxEntries = s_ControllableEntity.entryCount
 		for i = 0, s_MaxEntries - 1 do
@@ -214,12 +223,7 @@ function BotManager:OnVehicleDamage(p_VehicleEntity, p_Damage, p_DamageGiverInfo
 					local s_Bot = self:GetBotByName(s_Player.name)
 					if s_Bot ~= nil then
 						-- shoot back
-						if p_DamageGiverInfo.giver ~= nil then
-							--detect if we need to shoot back
-							if Config.ShootBackIfHit then
-								s_Bot:ShootAt(p_DamageGiverInfo.giver, true)
-							end
-						end
+						s_Bot:ShootAt(p_DamageGiverInfo.giver, true)
 					end
 				end
 			end

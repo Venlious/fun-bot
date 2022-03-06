@@ -80,6 +80,10 @@ function BotSpawner:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 	if p_UpdatePass ~= UpdatePass.UpdatePass_PostFrame then
 		return
 	end
+	local time = {}
+	if Globals.PerfLog then
+		table.insert(time, SharedUtils:GetTimeMS())
+	end
 
 	if self._FirstSpawnInLevel then
 		if self._FirstSpawnDelay <= 0.0 then
@@ -167,6 +171,10 @@ function BotSpawner:OnUpdateManagerUpdate(p_DeltaTime, p_UpdatePass)
 				end
 			end
 		end
+	end
+	if Globals.PerfLog then
+		table.insert(time, SharedUtils:GetTimeMS())
+		print("Bot-Spawner-Update: "..time[2]-time[1])
 	end
 end
 

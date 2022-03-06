@@ -221,8 +221,16 @@ end
 ---@param p_DeltaTime number
 ---@param p_SimulationDeltaTime number
 function FunBotServer:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
+	local time = {}
+	if Globals.PerfLog then
+		table.insert(time, SharedUtils:GetTimeMS())
+	end
 	m_GameDirector:OnEngineUpdate(p_DeltaTime)
 	m_NodeEditor:OnEngineUpdate(p_DeltaTime, p_SimulationDeltaTime)
+	if Globals.PerfLog then
+		table.insert(time, SharedUtils:GetTimeMS())
+		--print("Server-Engine-Update: "..time[2]-time[1])
+	end
 end
 
 ---VEXT Shared UpdateManager:Update Event

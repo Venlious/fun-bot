@@ -173,15 +173,8 @@ end
 
 ---@param p_DeltaTime number
 function Bot:OnUpdatePassPostFrame(p_DeltaTime)
-	local time = {}
-	if Globals.PerfLog then
-		table.insert(time, SharedUtils:GetTimeMS())
-	end
 	if self.m_Player.soldier ~= nil then
 		self.m_Player.soldier:SingleStepEntry(self.m_Player.controlledEntryId)
-	end
-	if Globals.PerfLog then
-		table.insert(time, SharedUtils:GetTimeMS())
 	end
 
 	if self.m_Player.soldier == nil then -- player not alive
@@ -189,9 +182,6 @@ function Bot:OnUpdatePassPostFrame(p_DeltaTime)
 		if self._UpdateTimer > Registry.BOT.BOT_UPDATE_CYCLE then
 			self:_UpdateRespawn(Registry.BOT.BOT_UPDATE_CYCLE)
 			self._UpdateTimer = 0.0
-		end
-		if Globals.PerfLog then
-			table.insert(time, SharedUtils:GetTimeMS())
 		end
 	else -- player alive
 
@@ -216,10 +206,6 @@ function Bot:OnUpdatePassPostFrame(p_DeltaTime)
 				-- detect modes
 				self:_SetActiveVars()
 				local s_Attacking = self._ShootPlayer ~= nil -- can be either attacking or reviving or enter of a vehicle with a player
-
-				if Globals.PerfLog then
-					table.insert(time, SharedUtils:GetTimeMS())
-				end
 
 				if not self.m_InVehicle then
 					-- sync slow code with fast code. Therefore execute the slow code first
@@ -252,19 +238,11 @@ function Bot:OnUpdatePassPostFrame(p_DeltaTime)
 						self._UpdateTimer = 0.0
 					end
 
-					if Globals.PerfLog then
-						table.insert(time, SharedUtils:GetTimeMS())
-					end
-
 					-- fast code
 					if s_Attacking then
 						self:_UpdateAiming()
 					else
 						self:_UpdateTargetMovement()
-					end
-
-					if Globals.PerfLog then
-						table.insert(time, SharedUtils:GetTimeMS())
 					end
 
 				else -- bot in vehicle
@@ -287,6 +265,7 @@ function Bot:OnUpdatePassPostFrame(p_DeltaTime)
 						if self._UpdateTimer >= Registry.BOT.BOT_UPDATE_CYCLE then
 							-- common part
 							self:_UpdateWeaponSelectionVehicle()
+							self:_CheckForExitVehicle(self._UpdateTimer)
 
 							-- differ attacking
 							if s_Attacking then
@@ -302,12 +281,7 @@ function Bot:OnUpdatePassPostFrame(p_DeltaTime)
 							-- common things
 							self:_UpdateSpeedOfMovementVehicle()
 							self:_UpdateInputs()
-							self:_CheckForExitVehicle(self._UpdateTimer)
 							self._UpdateTimer = 0.0
-						end
-
-						if Globals.PerfLog then
-							table.insert(time, SharedUtils:GetTimeMS())
 						end
 
 						-- fast code
@@ -325,10 +299,6 @@ function Bot:OnUpdatePassPostFrame(p_DeltaTime)
 							end
 						end
 						self:_UpdateYawVehicle(s_Attacking)
-
-						if Globals.PerfLog then
-							table.insert(time, SharedUtils:GetTimeMS())
-						end
 					end
 				end
 				self._UpdateFastTimer = 0.0
@@ -337,10 +307,6 @@ function Bot:OnUpdatePassPostFrame(p_DeltaTime)
 			-- very fast code
 			if not self.m_InVehicle then
 				self:_UpdateYaw()
-			end
-
-			if Globals.PerfLog then
-				table.insert(time, SharedUtils:GetTimeMS())
 			end
 
 		else -- alive, but no inputs allowed yet --> look around
@@ -358,19 +324,6 @@ function Bot:OnUpdatePassPostFrame(p_DeltaTime)
 				self._UpdateTimer = 0.0
 			end
 		end
-	end
-
-	if Globals.PerfLog then
-		local biggest = 0
-		local index = 0
-		for i = 1, #time-1 do
-			local dt = time[i+1]-time[i]
-			if dt > biggest then
-				biggest = dt
-				index = i
-			end
-		end
-		print(biggest.."   "..index.."  "..tostring(self.m_InVehicle).."  "..self.m_Player.name)
 	end
 end
 
