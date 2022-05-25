@@ -24,6 +24,44 @@ function ChatCommands:Execute(p_Parts, p_Player)
 			ChatManager:SendMessage('You have following permissions (GUID: ' .. tostring(p_Player.guid) .. '):', p_Player)
 			ChatManager:SendMessage(table.concat(s_Permissions, ', '), p_Player)
 		end
+	elseif p_Parts[1] == '!clear_inputs' then
+		if PermissionManager:HasPermission(p_Player, 'ChatCommands') == false then
+			ChatManager:SendMessage('You have no permissions for this action (ChatCommands).', p_Player)
+			return
+		end
+		print("clear inputs of all vehicles")
+		local s_Iterator = EntityManager:GetIterator("ServerVehicleEntity")
+		---@type ControllableEntity
+		local s_Entity = s_Iterator:Next()
+
+		---@type ControllableEntity
+		local s_ClosestEntity = nil
+		local s_ClosestDistance = 1000
+
+		while s_Entity ~= nil do
+			s_Entity = ControllableEntity(s_Entity)
+			local s_Position = s_Entity.transform.trans
+			local s_Distance = s_Position:Distance(p_Player.soldier.worldTransform.trans)
+
+			if s_Distance < s_ClosestDistance then
+				s_ClosestEntity = s_Entity
+				s_ClosestDistance = s_Distance
+			end
+
+			s_Entity = s_Iterator:Next()
+		end
+
+		if s_ClosestEntity ~= nil then
+			local s_MaxEntries = s_ClosestEntity.entryCount
+			for i = 0, s_MaxEntries - 1 do
+				if s_ClosestEntity:GetExternalInput(i) ~= nil then
+					print(i)
+					print(s_ClosestEntity:GetExternalInput(i))
+				end
+				s_ClosestEntity:SetExternalInput(i, nil)
+			end
+		end
+
 	elseif p_Parts[1] == '!car' then
 		if PermissionManager:HasPermission(p_Player, 'ChatCommands') == false then
 			ChatManager:SendMessage('You have no permissions for this action (ChatCommands).', p_Player)

@@ -165,6 +165,6 @@ Registry = {
 			-- Probability of a bot spawning on an attacked spawn point
 			PROBABILITY_ATTACKED_SPAWN = 80,
 			-- Probability of a bot spawning on their deployment base.
-			PROBABILITY_BASE_SPAWN = 15,
+			PROBABILITY_BASE_SPAWN = 100,
 		}
 }
